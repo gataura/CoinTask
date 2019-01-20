@@ -7,5 +7,8 @@ import retrofit2.http.*
 
 interface CoinClient {
     @GET("api/v1/mobile/feed")
-    fun getFeed(): Call<String>
+    fun getHead(): Call<String>
+
+    @GET("api/v1/mobile/latest")
+    fun getNews(): Call<String>
 }

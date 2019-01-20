@@ -53,18 +53,26 @@ class FeedActivity : AppCompatActivity() {
         setContentView(R.layout.activity_feed)
 
         newsRecyclerView = findViewById(R.id.news_recycler_view)
+        newsRecyclerView.setNestedScrollingEnabled(false)
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         newsRecyclerView.layoutManager = layoutManager
         newsAdapter = CoinAdapter(news)
         newsRecyclerView.adapter = newsAdapter
 
-        getNews().enqueue(object: Callback<String>{
+        news.clear()
+
+        headerNews()
+        latestNews()
+
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+    }
+
+    fun headerNews() {
+        getHeader().enqueue(object: Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
-                var jsonNews = response.body()
-                jsonFormat(jsonNews)
-                news.clear()
-                /*news.addAll(response.body())
-                newsAdapter.notifyDataSetChanged()*/
+                var headNews = response.body()
+                jsonHeader(headNews)
+                newsAdapter.notifyDataSetChanged()
             }
 
             override fun onFailure(call: Call<String>?, t: Throwable?) {
@@ -73,11 +81,25 @@ class FeedActivity : AppCompatActivity() {
             }
 
         })
-
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
-    private fun getNews() = client.getFeed()
+    fun latestNews() {
+        getNews().enqueue(object: Callback<String>{
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                var lateNews = response.body()
+                jsonLatest(lateNews)
+                newsAdapter.notifyDataSetChanged()
+            }
+
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+
+            }
+
+        })
+    }
+
+    private fun getHeader() = client.getHead()
+    private fun getNews() = client.getNews()
 
     class mCoinClient {
         private val builder = Retrofit
@@ -96,15 +118,22 @@ class FeedActivity : AppCompatActivity() {
         fun build() = client
     }
 
-    fun jsonFormat(jsonString: String) {
+    fun jsonLatest(jsonString: String) {
+
+        var latestNews = jsonString.substringAfter("\"type\":\"latest\",\"data\":")
+        latestNews = latestNews.substringBefore("}]}}")
+        val listNews = gson.fromJson(latestNews, Array<News>::class.java).asList()
+
+        news.addAll(listNews)
+    }
+
+    fun jsonHeader(jsonString: String) {
 
         var headerNews = jsonString.substringAfter("\"type\":\"header\",\"data\":")
         headerNews = headerNews.substringBefore("},{\"type\":")
         val header: News = gson.fromJson(headerNews, News::class.java)
 
-        var latestNews = jsonString.substringAfter("\"type\":\"latest\",\"data\":")
-        latestNews = latestNews.substringBefore("}]}}")
-        val listNews = gson.fromJson(latestNews, Array<News>::class.java).asList()
+        news.add(header)
 
     }
 
