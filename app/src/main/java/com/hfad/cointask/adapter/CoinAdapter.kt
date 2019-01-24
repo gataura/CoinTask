@@ -34,6 +34,14 @@ class CoinAdapter(var values: List<News>): RecyclerView.Adapter<CoinAdapter.Coin
 
     }
 
+    fun getLastVisibleItem(): Int {
+        if (values.isEmpty()) {
+            return 0
+        }
+
+        return values[values.size-1].getId()
+    }
+
     class CoinViewHolder(itemView: View): ViewHolder(itemView) {
 
         var newsTitle: TextView = itemView.findViewById(R.id.item_title)

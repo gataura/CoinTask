@@ -5,20 +5,23 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.hfad.cointask.adapter.CoinAdapter
-import com.hfad.cointask.model.DataLIst
 import com.hfad.cointask.model.News
-import com.hfad.cointask.model.NewsList
 import com.hfad.cointask.service.CoinClient
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.processors.PublishProcessor
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_feed.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.*
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class FeedActivity : AppCompatActivity() {
@@ -29,6 +32,16 @@ class FeedActivity : AppCompatActivity() {
     private lateinit var newsAdapter: CoinAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private val client = mCoinClient().build()
+    var offset = 0
+    var length = 10
+    private lateinit var compositeDispossable: CompositeDisposable
+    private lateinit var pagination: PublishProcessor<Int>
+    private val TAG = "FeedActivity"
+    private var totalItemCount = 0
+    private var lastVisibleItem = 0
+    private var loading = false
+    private val VISIBLE_TRESHOLD = 5
+    private lateinit var progressBar: ProgressBar
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -52,26 +65,78 @@ class FeedActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feed)
 
+        progressBar = findViewById(R.id.progressBar)
         newsRecyclerView = findViewById(R.id.news_recycler_view)
-        newsRecyclerView.setNestedScrollingEnabled(false)
+        newsRecyclerView.isNestedScrollingEnabled = false
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         newsRecyclerView.layoutManager = layoutManager
         newsAdapter = CoinAdapter(news)
         newsRecyclerView.adapter = newsAdapter
+        compositeDispossable = CompositeDisposable()
+        pagination = PublishProcessor.create()
 
         news.clear()
 
         headerNews()
-        latestNews()
+        setUpLoadMoreListener()
+        subscribeForData()
+
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+    }
+
+    fun setUpLoadMoreListener() {
+        newsRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                totalItemCount = newsRecyclerView.layoutManager!!.itemCount
+                lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+
+                if (!loading && totalItemCount <= (lastVisibleItem + VISIBLE_TRESHOLD)) {
+
+                    offset += length
+                    pagination.onNext(offset)
+                    loading = true
+
+                }
+
+            }
+
+        })
+    }
+
+    fun subscribeForData() {
+        var disposable:Disposable = pagination
+                .onBackpressureDrop()
+                .concatMap {
+                    loading = true
+                    progressBar.visibility = View.VISIBLE
+                     getNews(offset)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe ({ t ->
+                    jsonLatest(t)
+                    newsAdapter.notifyDataSetChanged()
+                    loading = false
+                    progressBar.visibility = View.INVISIBLE
+                }
+                ,{
+                    Log.e(TAG, it.toString())
+                })
+
+        compositeDispossable.add(disposable)
+        pagination.onNext(offset)
     }
 
     fun headerNews() {
         getHeader().enqueue(object: Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 var headNews = response.body()
-                jsonHeader(headNews)
+                if (headNews != null) {
+                    jsonHeader(headNews)
+                }
                 newsAdapter.notifyDataSetChanged()
             }
 
@@ -83,29 +148,20 @@ class FeedActivity : AppCompatActivity() {
         })
     }
 
-    fun latestNews() {
-        getNews().enqueue(object: Callback<String>{
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                var lateNews = response.body()
-                jsonLatest(lateNews)
-                newsAdapter.notifyDataSetChanged()
-            }
-
-            override fun onFailure(call: Call<String>?, t: Throwable?) {
-
-            }
-
-        })
-    }
-
     private fun getHeader() = client.getHead()
-    private fun getNews() = client.getNews()
+
+    private fun getNews(offset: Int): Flowable<String> {
+        return client.getNews(offset, length)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+    }
 
     class mCoinClient {
         private val builder = Retrofit
                 .Builder()
                 .baseUrl("https://api.cointelegraph.com/")
                 .addConverterFactory(ScalarsConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 
         private val retrofit: Retrofit by lazy {
             builder.build()
@@ -135,6 +191,11 @@ class FeedActivity : AppCompatActivity() {
 
         news.add(header)
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDispossable.dispose()
     }
 
 }
