@@ -1,5 +1,7 @@
 package com.hfad.cointask.adapter
 
+import android.content.Context
+import android.content.Intent
 import android.support.v7.view.menu.MenuView
 import android.support.v7.view.menu.MenuView.ItemView
 import android.support.v7.widget.RecyclerView
@@ -7,17 +9,54 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.TextView
 import com.hfad.cointask.R
 import com.hfad.cointask.model.News
+import com.hfad.cointask.service.ItemClickListener
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.Picasso
 
-class CoinAdapter(var values: List<News>): RecyclerView.Adapter<CoinAdapter.CoinViewHolder>() {
 
+@Suppress("DEPRECATION")
+class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Adapter<CoinAdapter.CoinViewHolder>() {
+
+    val intent = Intent(context, NewsViewActivity::class.java)
 
     override fun onBindViewHolder(p0: CoinViewHolder, p1: Int) {
 
-        val itemTitle: News = values[p1]
-        p0.newsTitle.text = itemTitle.getTitle()
+
+        val item: News = values[p1]
+
+        p0.newsTitle.text = item.getTitle()
+
+
+        var idItem = item.getId()
+
+
+        var labelItem = item.getBadge()?.getLabel()
+
+
+
+        if (labelItem != "default") {
+            p0.newsThumb.visibility = View.VISIBLE
+            Picasso.get()
+                    .load(item.getThumb())
+                    .into(p0.newsThumb)
+            } else {
+            p0.newsThumb.setImageDrawable(null)
+        }
+
+        p0.setItemClickListener(object: ItemClickListener {
+            override fun onClick(v: View, position: Int, isLongClick: Boolean) {
+
+                intent.putExtra("id", idItem.toString())
+                context.startActivity(intent)
+
+            }
+
+        })
 
     }
 
@@ -34,17 +73,38 @@ class CoinAdapter(var values: List<News>): RecyclerView.Adapter<CoinAdapter.Coin
 
     }
 
-    fun getLastVisibleItem(): Int {
-        if (values.isEmpty()) {
-            return 0
+
+    class CoinViewHolder(itemView: View): ViewHolder(itemView), View.OnLongClickListener, View.OnClickListener {
+
+        private lateinit var itemClickListener:ItemClickListener
+
+        fun setItemClickListener(itemClickListener: ItemClickListener) {
+
+            this.itemClickListener = itemClickListener
+
         }
 
-        return values[values.size-1].getId()
-    }
+        init {
+            itemView.setOnLongClickListener(this)
+            itemView.setOnClickListener(this)
+        }
 
-    class CoinViewHolder(itemView: View): ViewHolder(itemView) {
+
+        override fun onClick(v: View) {
+
+            itemClickListener.onClick(v, adapterPosition, false)
+
+        }
+
+        override fun onLongClick(v: View): Boolean {
+
+            itemClickListener.onClick(v, adapterPosition, true)
+            return true
+
+        }
 
         var newsTitle: TextView = itemView.findViewById(R.id.item_title)
+        var newsThumb: ImageView = itemView.findViewById(R.id.thumb_image)
 
     }
 }

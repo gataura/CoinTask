@@ -26,8 +26,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class FeedActivity : AppCompatActivity() {
 
-    var news = mutableListOf<News>()
-    val gson = GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS").create()
+    private var news = mutableListOf<News>()
+    private val gson = GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS").create()
     private lateinit var newsRecyclerView: RecyclerView
     private lateinit var newsAdapter: CoinAdapter
     private lateinit var layoutManager: LinearLayoutManager
@@ -40,7 +40,7 @@ class FeedActivity : AppCompatActivity() {
     private var totalItemCount = 0
     private var lastVisibleItem = 0
     private var loading = false
-    private val VISIBLE_TRESHOLD = 5
+    private val VISIBLE_TRESHOLD = 1
     private lateinit var progressBar: ProgressBar
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -70,7 +70,7 @@ class FeedActivity : AppCompatActivity() {
         newsRecyclerView.isNestedScrollingEnabled = false
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         newsRecyclerView.layoutManager = layoutManager
-        newsAdapter = CoinAdapter(news)
+        newsAdapter = CoinAdapter(news, this)
         newsRecyclerView.adapter = newsAdapter
         compositeDispossable = CompositeDisposable()
         pagination = PublishProcessor.create()
@@ -85,7 +85,7 @@ class FeedActivity : AppCompatActivity() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
-    fun setUpLoadMoreListener() {
+    private fun setUpLoadMoreListener() {
         newsRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -107,7 +107,7 @@ class FeedActivity : AppCompatActivity() {
         })
     }
 
-    fun subscribeForData() {
+    private fun subscribeForData() {
         var disposable:Disposable = pagination
                 .onBackpressureDrop()
                 .concatMap {
@@ -130,7 +130,7 @@ class FeedActivity : AppCompatActivity() {
         pagination.onNext(offset)
     }
 
-    fun headerNews() {
+    private fun headerNews() {
         getHeader().enqueue(object: Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 var headNews = response.body()
@@ -174,7 +174,7 @@ class FeedActivity : AppCompatActivity() {
         fun build() = client
     }
 
-    fun jsonLatest(jsonString: String) {
+    private fun jsonLatest(jsonString: String) {
 
         var latestNews = jsonString.substringAfter("\"type\":\"latest\",\"data\":")
         latestNews = latestNews.substringBefore("}]}}")

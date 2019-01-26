@@ -45,7 +45,8 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/news_recycler_view"
         app:layout_constraintTop_toTopOf="@+id/navigation"
-        tools:layout_editor_absoluteX="0dp" />
+        tools:layout_editor_absoluteX="0dp"
+        tools:ignore="MissingConstraints" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

@@ -61,7 +61,7 @@ class News (
         return tag
     }
 
-    fun getBadge(): Badge {
+    fun getBadge(): Badge? {
         return badge
     }
 
