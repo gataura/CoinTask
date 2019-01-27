@@ -2,20 +2,18 @@ package com.hfad.cointask.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.support.v7.view.menu.MenuView
-import android.support.v7.view.menu.MenuView.ItemView
+import android.graphics.drawable.TransitionDrawable
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import com.hfad.cointask.R
 import com.hfad.cointask.model.News
 import com.hfad.cointask.service.ItemClickListener
-import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 
 
@@ -39,13 +37,15 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
 
 
 
-        if (labelItem != "default") {
+        if (labelItem == "default") {
+
+            p0.newsThumb.setImageDrawable(null)
+
+            } else {
             p0.newsThumb.visibility = View.VISIBLE
             Picasso.get()
                     .load(item.getThumb())
                     .into(p0.newsThumb)
-            } else {
-            p0.newsThumb.setImageDrawable(null)
         }
 
         p0.setItemClickListener(object: ItemClickListener {
@@ -77,6 +77,7 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
     class CoinViewHolder(itemView: View): ViewHolder(itemView), View.OnLongClickListener, View.OnClickListener {
 
         private lateinit var itemClickListener:ItemClickListener
+        lateinit var transition: TransitionDrawable
 
         fun setItemClickListener(itemClickListener: ItemClickListener) {
 
@@ -93,12 +94,14 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
         override fun onClick(v: View) {
 
             itemClickListener.onClick(v, adapterPosition, false)
+            v.startAnimation(AnimationUtils.loadAnimation(v.context, R.anim.tap))
 
         }
 
         override fun onLongClick(v: View): Boolean {
 
-            itemClickListener.onClick(v, adapterPosition, true)
+            //itemClickListener.onClick(v, adapterPosition, true)
+            //v.startAnimation(AnimationUtils.loadAnimation(v.context, R.anim.tap))
             return true
 
         }
