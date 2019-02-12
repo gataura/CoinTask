@@ -22,7 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".adapter.NewsViewActivity"></activity>
+        <activity android:name=".adapter.NewsViewActivity" />
     </application>
+
 
 </manifest>

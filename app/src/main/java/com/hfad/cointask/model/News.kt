@@ -1,8 +1,14 @@
 package com.hfad.cointask.model
 
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
+@Entity
 class News (
-        private var title: String,
+        @PrimaryKey
         private var id: Int,
+
+        private var title: String,
         private var lead: String,
         private var thumb: String,
         private var published_at: Published,
