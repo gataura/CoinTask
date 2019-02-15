@@ -1,27 +1,29 @@
 package com.hfad.cointask.model
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.*
+import com.hfad.cointask.helper.NewsConverter
 
-@Entity
+@Entity(tableName = "newsData")
+@TypeConverters(NewsConverter::class)
 class News (
-        @PrimaryKey
-        private var id: Int,
 
-        private var title: String,
-        private var lead: String,
-        private var thumb: String,
-        private var published_at: Published,
-        private var share_url: String,
-        private var views: Int,
-        private var type: String,
-        private var author: String,
-        private var author_id: Int,
-        private var tag: String,
-        private var badge: Badge,
-        private var isSponsored: Boolean,
-        private var audio: String
+        @PrimaryKey private var id: Int = 0,
+        @ColumnInfo(name = "title") private var title: String = "",
+        @ColumnInfo(name = "lead") private var lead: String = "",
+        @ColumnInfo(name = "thumb") private var thumb: String = "",
+        @ColumnInfo(name = "published_at") private var published_at: Published? = null,
+        @ColumnInfo(name = "share_url") private var share_url: String = "",
+        @ColumnInfo(name = "views") private var views: Int = 0,
+        @ColumnInfo(name = "type") private var type: String = "",
+        @ColumnInfo(name = "author") private var author: String = "",
+        @ColumnInfo(name = "author_id") private var author_id: Int = 0,
+        @ColumnInfo(name = "tag") private var tag: String = "",
+        @ColumnInfo(name = "badge") private var badge: Badge? = null,
+        @ColumnInfo(name = "is_sponsored") private var isSponsored: Boolean = false,
+        @ColumnInfo(name = "audio") private var audio: String = ""
 ) {
+
+
 
     fun getTitle(): String {
         return title
@@ -39,11 +41,11 @@ class News (
         return thumb
     }
 
-    fun getPublishedAt(): Published {
+    fun getPublished_at(): Published? {
         return published_at
     }
 
-    fun getShareUrl(): String {
+    fun getShare_url(): String {
         return share_url
     }
 
@@ -59,7 +61,7 @@ class News (
         return author
     }
 
-    fun getAuthorId(): Int {
+    fun getAuthor_id(): Int {
         return author_id
     }
 

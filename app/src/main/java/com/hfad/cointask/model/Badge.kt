@@ -11,4 +11,8 @@ class Badge (private var title: String, private var label: String) {
         return label
     }
 
+    override fun toString(): String {
+        return "$title;$label"
+    }
+
 }

@@ -2,9 +2,9 @@ package com.hfad.cointask.fragments
 
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +19,7 @@ import com.hfad.cointask.adapter.CoinAdapter
 import com.hfad.cointask.model.News
 import com.hfad.cointask.service.CoinClient
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -40,13 +41,13 @@ private const val ARG_PARAM2 = "param2"
  * A simple [Fragment] subclass.
  *
  */
-class FeedFragment : Fragment() {
+class FeedFragment : androidx.fragment.app.Fragment() {
 
     private var news = mutableListOf<News>()
     private val gson = GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS").create()
-    private lateinit var newsRecyclerView: RecyclerView
+    private lateinit var newsRecyclerView: androidx.recyclerview.widget.RecyclerView
     private lateinit var newsAdapter: CoinAdapter
-    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var layoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private val client = FeedFragment.mCoinClient().build()
     var offset = 0
     var length = 10
@@ -67,7 +68,7 @@ class FeedFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressBar)
         newsRecyclerView = view.findViewById(R.id.news_recycler_view)
         newsRecyclerView.isNestedScrollingEnabled = false
-        layoutManager = LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
+        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.requireContext(), androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false)
         newsRecyclerView.layoutManager = layoutManager
         newsAdapter = CoinAdapter(news, this.requireContext())
         newsRecyclerView.adapter = newsAdapter
@@ -84,9 +85,9 @@ class FeedFragment : Fragment() {
     }
 
     private fun setUpLoadMoreListener() {
-        newsRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        newsRecyclerView.addOnScrollListener(object: androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 totalItemCount = newsRecyclerView.layoutManager!!.itemCount
@@ -106,6 +107,7 @@ class FeedFragment : Fragment() {
     }
 
     private fun subscribeForData() {
+
         var disposable: Disposable = pagination
                 .onBackpressureDrop()
                 .concatMap {

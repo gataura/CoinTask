@@ -1,10 +1,9 @@
 package com.hfad.cointask.helper
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Update
+import androidx.room.*
 import com.hfad.cointask.model.News
+import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface NewsDao {
@@ -17,5 +16,8 @@ interface NewsDao {
 
     @Delete
     fun delete(news: News)
+
+    @Query("SELECT COUNT(*) from newsData WHERE id = :id")
+    fun newsCount(id: Int): Int
 
 }

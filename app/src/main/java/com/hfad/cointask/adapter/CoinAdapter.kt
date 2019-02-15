@@ -1,10 +1,12 @@
 package com.hfad.cointask.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.TransitionDrawable
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.ViewHolder
+import android.util.Log
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,22 +15,28 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.hfad.cointask.R
 import com.hfad.cointask.helper.AppDatabase
+import com.hfad.cointask.helper.CallableNews
 import com.hfad.cointask.helper.NewsDao
-import com.hfad.cointask.model.Badge
 import com.hfad.cointask.model.News
-import com.hfad.cointask.model.Published
 import com.hfad.cointask.service.ItemClickListener
 import com.squareup.picasso.Picasso
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.util.*
+import java.util.function.Consumer
 
 
 @Suppress("DEPRECATION")
-class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Adapter<CoinAdapter.CoinViewHolder>() {
+class CoinAdapter(var values: List<News>, var context: Context): androidx.recyclerview.widget.RecyclerView.Adapter<CoinAdapter.CoinViewHolder>() {
 
     val intent = Intent(context, NewsViewActivity::class.java)
 
-   // var db: AppDatabase = App.getInstance().getDatabase()
-   // var newsDao: NewsDao = db.newsDao()
+
+    var db:AppDatabase = AppDatabase.getInstance(context) as AppDatabase
 
     object NewsFields {
         var title = ""
@@ -37,10 +45,22 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
         var label: String? = ""
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
+
     override fun onBindViewHolder(p0: CoinViewHolder, p1: Int) {
 
 
-        val item: News = values[p1]
+
+        val item = values[p1]
+
+        isNewsInDb(item, p0)
 
         NewsFields.title = item.getTitle()
         p0.newsTitle.text = NewsFields.title
@@ -77,7 +97,7 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
 
         })
 
-        setOnImageClickListener(p0.saveNews)
+        setOnImageClickListener(p0.saveNews, item)
 
 
     }
@@ -88,48 +108,58 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
 
     }
 
-    fun saveToDb() {
+    @SuppressLint("CheckResult")
+    fun saveToDb(data: News, db: AppDatabase) {
 
-        var news = News(
-                id = NewsFields.id.toInt(),
-                title = NewsFields.title,
-                thumb = NewsFields.newsThumb,
-                badge = Badge(
-                        label = NewsFields.label.toString(),
-                        title = ""
-                ),
-                audio = "",
-                author = "",
-                author_id = 0,
-                published_at = Published(
-                        date = Date(),
-                        timezone = "",
-                        timezone_type = 0
-                ),
-                share_url = "",
-                isSponsored = false,
-                views = 0,
-                lead = "",
-                tag = "",
-                type = ""
-        )
-
-        //newsDao.insert(news)
-    }
-
-    fun deleteFromDb() {
+        Completable.fromAction{ db.newsDao().insert(data) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({}, {
+                    Log.d("SaveToDb", "Again", it)
+                })
 
     }
 
-    private fun setOnImageClickListener(img: ImageView) {
+    @SuppressLint("CheckResult")
+    fun deleteFromDb(data: News, db: AppDatabase) {
+
+        Completable.fromAction{ db.newsDao().delete(data) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                }, {
+                    Log.d("SaveToDb", "Again", it)
+                })
+
+    }
+
+    @SuppressLint("CheckResult")
+    private fun isNewsInDb(item: News, p0: CoinViewHolder) {
+
+        Observable.fromCallable{db.newsDao().newsCount(item.getId())}
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{
+                        if (it> 0) {
+                            p0.saveNews.setImageResource(R.drawable.save_icon_24)
+                            p0.saveNews.tag = "saved"
+                    }
+                }
+
+    }
+
+
+    private fun setOnImageClickListener(img: ImageView, item: News) {
 
         img.setOnClickListener {
             if (img.tag == "saved") {
                 img.setImageResource(R.drawable.save_icon_outline_24)
                 img.tag = "not saved"
+                deleteFromDb(item, db)
             } else {
                 img.setImageResource(R.drawable.save_icon_24)
                 img.tag = "saved"
+                saveToDb(item, db)
             }
 
         }
@@ -151,6 +181,10 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
 
     class CoinViewHolder(itemView: View): ViewHolder(itemView), View.OnLongClickListener, View.OnClickListener {
 
+        var newsTitle: TextView
+        var newsThumb: ImageView
+        var saveNews: ImageView
+
         private lateinit var itemClickListener:ItemClickListener
         lateinit var transition: TransitionDrawable
 
@@ -163,6 +197,9 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
         init {
             itemView.setOnLongClickListener(this)
             itemView.setOnClickListener(this)
+            newsTitle = itemView.findViewById(R.id.item_title)
+            newsThumb = itemView.findViewById(R.id.thumb_image)
+            saveNews = itemView.findViewById(R.id.save_icon)
         }
 
 
@@ -181,9 +218,6 @@ class CoinAdapter(var values: List<News>, var context: Context): RecyclerView.Ad
 
         }
 
-        var newsTitle: TextView = itemView.findViewById(R.id.item_title)
-        var newsThumb: ImageView = itemView.findViewById(R.id.thumb_image)
-        var saveNews: ImageView = itemView.findViewById(R.id.save_icon)
 
     }
 }
