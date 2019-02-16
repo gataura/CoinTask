@@ -1,5 +1,8 @@
 package com.hfad.cointask.model
 
+import android.annotation.SuppressLint
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class Published(private var date: Date, private var timezoneType: Int, private var timezone: String) {
@@ -17,8 +20,13 @@ class Published(private var date: Date, private var timezoneType: Int, private v
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     override fun toString(): String {
-        return date.toString() + ";" + timezoneType.toString() + ";" + timezone
+
+        var df: DateFormat = SimpleDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS")
+
+
+        return df.format(date) + ";" + timezoneType.toString() + ";" + timezone
     }
 
 }

@@ -1,6 +1,7 @@
 package com.hfad.cointask.fragments
 
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,6 +61,7 @@ class FeedFragment : androidx.fragment.app.Fragment() {
     private val VISIBLE_TRESHOLD = 1
     private lateinit var progressBar: ProgressBar
 
+    @SuppressLint("WrongConstant")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment

@@ -20,4 +20,7 @@ interface NewsDao {
     @Query("SELECT COUNT(*) from newsData WHERE id = :id")
     fun newsCount(id: Int): Int
 
+    @Query("SELECT * from newsData")
+    fun getAll(): List<News>
+
 }

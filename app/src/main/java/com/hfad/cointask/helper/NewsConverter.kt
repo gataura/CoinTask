@@ -1,5 +1,6 @@
 package com.hfad.cointask.helper
 
+import android.annotation.SuppressLint
 import androidx.room.TypeConverter
 import com.hfad.cointask.model.Badge
 import com.hfad.cointask.model.Published
@@ -14,6 +15,7 @@ class NewsConverter {
         return publ.toString()
     }
 
+    @SuppressLint("SimpleDateFormat")
     @TypeConverter
     fun toPublished(str: String): Published {
         var array = str.split(";")
