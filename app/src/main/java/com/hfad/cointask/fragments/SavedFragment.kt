@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 import com.hfad.cointask.R
 import com.hfad.cointask.adapter.SavedAdapter
@@ -35,6 +36,7 @@ class SavedFragment : androidx.fragment.app.Fragment() {
     private lateinit var savedRecyclerView: androidx.recyclerview.widget.RecyclerView
     private lateinit var savedAdapter: SavedAdapter
     private lateinit var layoutManager: androidx.recyclerview.widget.LinearLayoutManager
+    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
 
     @SuppressLint("WrongConstant", "CheckResult")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -42,11 +44,13 @@ class SavedFragment : androidx.fragment.app.Fragment() {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_saved, container, false)
 
+        savedRecyclerView = view.findViewById(R.id.saved_recycler_view)
+        savedRecyclerView.isNestedScrollingEnabled = false
+
+        mSwipeRefreshLayout = view.findViewById(R.id.saved_container)
 
        if (isAdded) {
         db = AppDatabase.getInstance(this.requireContext()) as AppDatabase
-        savedRecyclerView = view.findViewById(R.id.saved_recycler_view)
-        savedRecyclerView.isNestedScrollingEnabled = false
 
         layoutManager = LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
 
@@ -67,6 +71,20 @@ class SavedFragment : androidx.fragment.app.Fragment() {
                        Log.d("SavedFragment", "Распарси", it)
                    })
 
+
+        mSwipeRefreshLayout.setOnRefreshListener {
+            news.clear()
+            Observable.fromCallable{db.newsDao().getAll()}
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        news.addAll(it)
+                        savedAdapter.notifyDataSetChanged()
+                    } , {
+                        Log.d("SavedFragment", "Распарси", it)
+                    })
+            mSwipeRefreshLayout.isRefreshing = false
+        }
        }
 
         return view
