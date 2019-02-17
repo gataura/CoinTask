@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <style name="badge_title">
+        <item name="android:textColor">#ff000000</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+</resources>

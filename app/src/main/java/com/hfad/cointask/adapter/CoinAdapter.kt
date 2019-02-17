@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.hfad.cointask.R
 import com.hfad.cointask.helper.AppDatabase
+import com.hfad.cointask.helper.CoinViewHolder
 import com.hfad.cointask.helper.NewsItem
 import com.hfad.cointask.helper.NewsItem.NewsFields.title
 import com.hfad.cointask.model.News
@@ -21,13 +22,13 @@ import com.squareup.picasso.Picasso
 
 
 @Suppress("DEPRECATION")
-class CoinAdapter(var values: List<News>, var context: Context): androidx.recyclerview.widget.RecyclerView.Adapter<CoinAdapter.CoinViewHolder>() {
+class CoinAdapter(var values: List<News>, var context: Context): androidx.recyclerview.widget.RecyclerView.Adapter<CoinViewHolder>() {
 
     val intent = Intent(context, NewsViewActivity::class.java)
 
 
     private var db:AppDatabase = AppDatabase.getInstance(context) as AppDatabase
-    var helper = NewsItem()
+    var helper = NewsItem(context)
 
 
     override fun getItemId(position: Int): Long {
@@ -47,40 +48,7 @@ class CoinAdapter(var values: List<News>, var context: Context): androidx.recycl
 
         helper.isNewsInDb(item, p0, db)
 
-        title = item.getTitle()
-        p0.newsTitle.text = NewsItem.NewsFields.title
-
-        NewsItem.NewsFields.id = item.getId().toString()
-        val idItem = NewsItem.NewsFields.id
-
-        NewsItem.NewsFields.label = item.getBadge()?.getLabel()
-        val labelItem = NewsItem.NewsFields.label
-
-        NewsItem.NewsFields.newsThumb = item.getThumb()
-        val thumbItem = NewsItem.NewsFields.newsThumb
-
-
-
-        if (labelItem == "default") {
-
-            p0.newsThumb.setImageDrawable(null)
-
-            } else {
-            p0.newsThumb.visibility = View.VISIBLE
-            Picasso.get()
-                    .load(thumbItem)
-                    .into(p0.newsThumb)
-        }
-
-        p0.setItemClickListener(object: ItemClickListener {
-            override fun onClick(v: View, position: Int, isLongClick: Boolean) {
-
-                intent.putExtra("id", idItem)
-                context.startActivity(intent)
-
-            }
-
-        })
+        helper.setNewsItem(p0, item, context)
 
         setOnImageClickListener(p0.saveNews, item)
 
@@ -125,45 +93,4 @@ class CoinAdapter(var values: List<News>, var context: Context): androidx.recycl
     }
 
 
-    class CoinViewHolder(itemView: View): ViewHolder(itemView), View.OnLongClickListener, View.OnClickListener {
-
-        var newsTitle: TextView
-        var newsThumb: ImageView
-        var saveNews: ImageView
-
-        private lateinit var itemClickListener:ItemClickListener
-        lateinit var transition: TransitionDrawable
-
-        fun setItemClickListener(itemClickListener: ItemClickListener) {
-
-            this.itemClickListener = itemClickListener
-
-        }
-
-        init {
-            itemView.setOnLongClickListener(this)
-            itemView.setOnClickListener(this)
-            newsTitle = itemView.findViewById(R.id.item_title)
-            newsThumb = itemView.findViewById(R.id.thumb_image)
-            saveNews = itemView.findViewById(R.id.save_icon)
-        }
-
-
-        override fun onClick(v: View) {
-
-            itemClickListener.onClick(v, adapterPosition, false)
-            v.startAnimation(AnimationUtils.loadAnimation(v.context, R.anim.tap))
-
-        }
-
-        override fun onLongClick(v: View): Boolean {
-
-            //itemClickListener.onClick(v, adapterPosition, true)
-            //v.startAnimation(AnimationUtils.loadAnimation(v.context, R.anim.tap))
-            return true
-
-        }
-
-
-    }
 }

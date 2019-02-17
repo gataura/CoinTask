@@ -1,61 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?android:selectableItemBackground">
 
-    <TextView
-        android:id="@+id/item_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/news_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.023"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/thumb_image"
-        app:layout_constraintVertical_bias="1.0" />
 
-    <ImageView
-        android:id="@+id/thumb_image"
+    <androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/news_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="@string/article_thumb"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background"
-        tools:ignore="VectorDrawableCompat" />
+        app:cardCornerRadius="4dp"
+        app:cardUseCompatPadding="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardElevation="4dp"
+        android:layout_margin="8dp">
 
-    <ImageView
-        android:id="@+id/save_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/item_title"
-        app:layout_constraintTop_toBottomOf="@+id/thumb_image"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/save_icon_outline_24"
-        android:contentDescription="@string/save_article"
-        android:clickable="true"
-        android:focusable="true"
-        android:tag="not saved"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/item_title"
+                style="@style/item_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd ="8dp"
+                android:text="@string/news_title"
+                card_view:layout_constraintBottom_toTopOf="@+id/time_views"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintHorizontal_bias="0.023"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/thumb_image"
+                card_view:layout_constraintVertical_bias="0.723" />
+
+            <ImageView
+                android:id="@+id/thumb_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/article_thumb"
+                android:visibility="invisible"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintHorizontal_bias="1.0"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent"
+                card_view:srcCompat="@drawable/ic_launcher_background"
+                tools:ignore="VectorDrawableCompat" />
+
+            <ImageView
+                android:id="@+id/save_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:contentDescription="@string/save_article"
+                android:focusable="true"
+                android:tag="not saved"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintHorizontal_bias="0.976"
+                card_view:layout_constraintStart_toEndOf="@+id/time_views"
+                card_view:layout_constraintTop_toBottomOf="@+id/item_title"
+                card_view:layout_constraintVertical_bias="0.424"
+                card_view:srcCompat="@drawable/save_icon_outline_24" />
+
+            <TextView
+                android:id="@+id/badge_title"
+                style="@style/badge_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/badge_title"
+                card_view:layout_constraintBottom_toTopOf="@+id/item_title"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintHorizontal_bias="0.0"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/thumb_image"
+                card_view:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/time_views"
+                style="@style/times_views"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="17dp"
+                android:text="@string/time_views"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintHorizontal_bias="0.0"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/item_title"
+                card_view:layout_constraintVertical_bias="0.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.cardview.widget.CardView>

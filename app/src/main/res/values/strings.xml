@@ -11,4 +11,6 @@
     <string name="news">News</string>
     <string name="saved">Saved</string>
     <string name="save_article">Save article</string>
+    <string name="badge_title">Badge Title</string>
+    <string name="time_views">Time • Views</string>
 </resources>

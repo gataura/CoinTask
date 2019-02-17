@@ -1,11 +1,36 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="news_card">
+        <item name="android:radius">2dp</item>
+        <item name="android:color">#ffffffff</item>
+        <item name="android:shadowColor">#33878787</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+    </style>
+
+    <style name="badge_title">
+        <item name="android:textColor">#ff000000</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.2</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="item_title">
+        <item name="android:textColor">#ff1a1f21</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="times_views">
+        <item name="android:textColor">#ff595959</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
 </resources>
