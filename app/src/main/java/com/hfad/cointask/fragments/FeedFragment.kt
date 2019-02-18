@@ -45,7 +45,7 @@ private const val ARG_PARAM2 = "param2"
 class FeedFragment : androidx.fragment.app.Fragment() {
 
     private var news = mutableListOf<News>()
-    private val gson = GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS").create()
+    private val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss.ssssss").create()
     private lateinit var newsRecyclerView: androidx.recyclerview.widget.RecyclerView
     private lateinit var newsAdapter: CoinAdapter
     private lateinit var layoutManager: androidx.recyclerview.widget.LinearLayoutManager

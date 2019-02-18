@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 import com.hfad.cointask.R
@@ -65,6 +66,7 @@ class SavedFragment : androidx.fragment.app.Fragment() {
                    .subscribeOn(Schedulers.io())
                    .observeOn(AndroidSchedulers.mainThread())
                    .subscribe({
+                       news.clear()
                        news.addAll(it)
                        savedAdapter.notifyDataSetChanged()
                    } , {
@@ -73,11 +75,11 @@ class SavedFragment : androidx.fragment.app.Fragment() {
 
 
         mSwipeRefreshLayout.setOnRefreshListener {
-            news.clear()
             Observable.fromCallable{db.newsDao().getAll()}
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
+                        news.clear()
                         news.addAll(it)
                         savedAdapter.notifyDataSetChanged()
                     } , {

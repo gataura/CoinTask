@@ -23,7 +23,7 @@ class Published(private var date: Date, private var timezoneType: Int, private v
     @SuppressLint("SimpleDateFormat")
     override fun toString(): String {
 
-        var df: DateFormat = SimpleDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS")
+        var df: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS")
 
 
         return df.format(date) + ";" + timezoneType.toString() + ";" + timezone

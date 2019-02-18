@@ -19,7 +19,7 @@ class NewsConverter {
     @TypeConverter
     fun toPublished(str: String): Published {
         var array = str.split(";")
-        var format: DateFormat = SimpleDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS")
+        var format: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS")
         var date = format.parse(array[0])
         var publ = Published(date, array[1].toInt(), array[2])
 

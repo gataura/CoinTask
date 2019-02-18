@@ -37,7 +37,7 @@ class NewsItem(context: Context) {
     }
 
     @SuppressLint("SimpleDateFormat")
-    var df: DateFormat = SimpleDateFormat("yyyy-mm-dd HH:mm:ss.SSSSSS")
+    var df: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS")
     var timePubl: Long = 0
     var prettyTime = PrettyTime()
     var timeViews = ""
