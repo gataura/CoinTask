@@ -22,13 +22,7 @@ import com.squareup.picasso.Picasso
 
 
 @Suppress("DEPRECATION")
-class CoinAdapter(var values: List<News>, var context: Context): androidx.recyclerview.widget.RecyclerView.Adapter<CoinViewHolder>() {
-
-    val intent = Intent(context, NewsViewActivity::class.java)
-
-
-    private var db:AppDatabase = AppDatabase.getInstance(context) as AppDatabase
-    var helper = NewsItem(context)
+class CoinAdapter(var values: List<News>, var context: Context, var helper: NewsItem, var db: AppDatabase): androidx.recyclerview.widget.RecyclerView.Adapter<CoinViewHolder>() {
 
 
     override fun getItemId(position: Int): Long {

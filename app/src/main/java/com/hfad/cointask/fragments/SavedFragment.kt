@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.hfad.cointask.R
 import com.hfad.cointask.adapter.SavedAdapter
 import com.hfad.cointask.helper.AppDatabase
+import com.hfad.cointask.helper.NewsItem
 import com.hfad.cointask.model.News
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,12 +33,14 @@ private const val ARG_PARAM2 = "param2"
  */
 class SavedFragment : androidx.fragment.app.Fragment() {
 
-    lateinit var db: AppDatabase
     private var news = mutableListOf<News>()
     private lateinit var savedRecyclerView: androidx.recyclerview.widget.RecyclerView
     private lateinit var savedAdapter: SavedAdapter
     private lateinit var layoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var helper: NewsItem
+    lateinit var db: AppDatabase
+
 
     @SuppressLint("WrongConstant", "CheckResult")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -52,12 +55,13 @@ class SavedFragment : androidx.fragment.app.Fragment() {
 
        if (isAdded) {
         db = AppDatabase.getInstance(this.requireContext()) as AppDatabase
+        helper = NewsItem(this.requireContext())
 
         layoutManager = LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
 
         savedRecyclerView.layoutManager = layoutManager
 
-        savedAdapter = SavedAdapter(news, this.requireContext())
+        savedAdapter = SavedAdapter(news, this.requireContext(),helper, db)
 
         savedRecyclerView.adapter = savedAdapter
         news.clear()

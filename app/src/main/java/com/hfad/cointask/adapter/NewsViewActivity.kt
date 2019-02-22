@@ -11,7 +11,6 @@ import com.hfad.cointask.R
 class NewsViewActivity : AppCompatActivity() {
 
     lateinit var id:String
-    lateinit var toolbar: Toolbar
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,9 +24,6 @@ class NewsViewActivity : AppCompatActivity() {
         webView.settings.javaScriptEnabled = true
 
         intent.removeExtra("id")
-
-        toolbar = findViewById(R.id.my_toolbar)
-        setSupportActionBar(toolbar)
 
     }
 

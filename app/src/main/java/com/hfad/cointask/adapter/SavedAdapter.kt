@@ -20,11 +20,8 @@ import com.hfad.cointask.service.ItemClickListener
 import com.squareup.picasso.Picasso
 
 @Suppress("DEPRECATION")
-class SavedAdapter(var values: List<News>, var context: Context): RecyclerView.Adapter<CoinViewHolder>() {
+class SavedAdapter(var values: List<News>, var context: Context, var helper: NewsItem, var db: AppDatabase): RecyclerView.Adapter<CoinViewHolder>() {
 
-    var helper = NewsItem(context)
-    private var db: AppDatabase = AppDatabase.getInstance(context) as AppDatabase
-    val intent = Intent(context, NewsViewActivity::class.java)
 
     override fun getItemId(position: Int): Long {
         return position.toLong()

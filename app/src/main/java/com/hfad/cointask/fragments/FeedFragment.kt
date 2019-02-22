@@ -17,6 +17,8 @@ import com.hfad.cointask.FeedActivity
 
 import com.hfad.cointask.R
 import com.hfad.cointask.adapter.CoinAdapter
+import com.hfad.cointask.helper.AppDatabase
+import com.hfad.cointask.helper.NewsItem
 import com.hfad.cointask.model.News
 import com.hfad.cointask.service.CoinClient
 import io.reactivex.Flowable
@@ -58,8 +60,10 @@ class FeedFragment : androidx.fragment.app.Fragment() {
     private var totalItemCount = 0
     private var lastVisibleItem = 0
     private var loading = false
-    private val VISIBLE_TRESHOLD = 1
+    private val VISIBLE_TRESHOLD = 5
     private lateinit var progressBar: ProgressBar
+    private lateinit var helper: NewsItem
+    private lateinit var db: AppDatabase
 
     @SuppressLint("WrongConstant")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -67,12 +71,15 @@ class FeedFragment : androidx.fragment.app.Fragment() {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_feed, container, false)
 
+        helper = NewsItem(this.requireContext())
+        db = AppDatabase.getInstance(this.requireContext()) as AppDatabase
+
         progressBar = view.findViewById(R.id.progressBar)
         newsRecyclerView = view.findViewById(R.id.news_recycler_view)
         newsRecyclerView.isNestedScrollingEnabled = false
         layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.requireContext(), androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false)
         newsRecyclerView.layoutManager = layoutManager
-        newsAdapter = CoinAdapter(news, this.requireContext())
+        newsAdapter = CoinAdapter(news, this.requireContext(), helper, db)
         newsRecyclerView.adapter = newsAdapter
         compositeDispossable = CompositeDisposable()
         pagination = PublishProcessor.create()
